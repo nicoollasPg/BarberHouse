@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const UsuarioDao = require('../dao/UsuarioDao');
+const { validatePassword, validateEmail, validateDNI } = require('../middleware/validator');
 
 class UsuarioController {
   // LOGIN
@@ -9,19 +10,22 @@ class UsuarioController {
       const { correo, password } = req.body;
 
       if (!correo || !password) {
-        return res.status(400).json({ message: 'Faltan datos' });
+        return res.status(400).json({ message: 'Datos incompletos' });
       }
 
       const usuario = await UsuarioDao.encontrarPorCorreo(correo);
       if (!usuario) {
-        return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
+        // Mensaje generico para no revelar si el usuario existe
+        return res.status(401).json({ message: 'Credenciales invalidas' });
       }
 
       const passwordValido = await bcrypt.compare(password, usuario.hash_contrasena);
       if (!passwordValido) {
-        return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
+        // Mismo mensaje generico
+        return res.status(401).json({ message: 'Credenciales invalidas' });
       }
 
+      // Generar token con expiracion
       const token = jwt.sign(
         { id: usuario.id, rol: usuario.rol, nombre_usuario: usuario.nombre_usuario },
         process.env.JWT_SECRET || 'claveultrasecreta',
@@ -39,7 +43,8 @@ class UsuarioController {
       });
     } catch (error) {
       console.error('Error en login:', error);
-      res.status(500).json({ message: 'Error interno del servidor' });
+      // Mensaje generico sin exponer detalles
+      res.status(500).json({ message: 'Error en el servidor' });
     }
   }
 
@@ -48,11 +53,45 @@ class UsuarioController {
     try {
       const { nombre_usuario, correo, dni, password, rol } = req.body;
 
+      console.log('--- DEBUG REGISTRO ---');
+      console.log('Datos recibidos:', { nombre_usuario, correo, dni, rol, password: '***' });
+
       if (!nombre_usuario || !correo || !dni || !password || !rol) {
-        return res.status(400).json({ message: 'Faltan datos' });
+        console.log('Faltan datos');
+        return res.status(400).json({ message: 'Datos incompletos' });
       }
 
-      const hash_contrasena = await bcrypt.hash(password, 10);
+      // Validar email
+      const emailValidation = validateEmail(correo);
+      if (!emailValidation.valid) {
+        console.log('Email invalido:', emailValidation.message);
+        return res.status(400).json({ message: emailValidation.message });
+      }
+
+      // Validar DNI
+      const dniValidation = validateDNI(dni);
+      if (!dniValidation.valid) {
+        console.log('DNI invalido:', dniValidation.message);
+        return res.status(400).json({ message: dniValidation.message });
+      }
+
+      // Validar fuerza de contraseña
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.valid) {
+        console.log('Password invalido:', passwordValidation.message);
+        return res.status(400).json({ message: passwordValidation.message });
+      }
+
+      // Validar rol permitido
+      const rolesPermitidos = ['admin', 'barbero', 'recepcionista', 'cliente'];
+      if (!rolesPermitidos.includes(rol)) {
+        console.log('Rol invalido:', rol);
+        return res.status(400).json({ message: 'Rol invalido' });
+      }
+
+      // Hash de contraseña con 12 rounds (mas seguro que 10)
+      const hash_contrasena = await bcrypt.hash(password, 12);
+
       const usuarioId = await UsuarioDao.crearUsuario({
         nombre_usuario,
         hash_contrasena,
@@ -63,8 +102,14 @@ class UsuarioController {
 
       res.status(201).json({ message: 'Usuario creado correctamente', usuarioId });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error al registrar usuario', error: error.message });
+      console.error('Error al registrar:', error);
+
+      // Manejar errores especificos sin exponer detalles del sistema
+      if (error.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ message: 'El correo o DNI ya esta registrado' });
+      }
+
+      res.status(500).json({ message: 'Error al registrar usuario' });
     }
   }
 
@@ -82,15 +127,15 @@ class UsuarioController {
     }
   }
   // OBTENER TODOS LOS USUARIOS (solo admin)
-static async obtenerTodos(req, res) {
-  try {
-    const usuarios = await UsuarioDao.obtenerTodos();
-    res.json(usuarios);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener los usuarios', error: error.message });
+  static async obtenerTodos(req, res) {
+    try {
+      const usuarios = await UsuarioDao.obtenerTodos();
+      res.json(usuarios);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al obtener los usuarios', error: error.message });
+    }
   }
-}
 
 }
 

@@ -18,4 +18,8 @@ router.delete('/servicios/:id', authMiddleware, requireRole(['admin']), Servicio
 //  Reservas
 router.get('/reservas', authMiddleware, requireRole(['admin']), ReservaController.obtenerTodas);
 
+// Reportes
+const ReporteController = require('../controllers/ReporteController');
+router.get('/reportes/excel', authMiddleware, requireRole(['admin']), ReporteController.generarExcel);
+
 module.exports = router;

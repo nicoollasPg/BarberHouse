@@ -14,7 +14,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 async function loadComponents() {
     try {
-        const basePath = 'C:/Users/ng080/Desktop/BarberHouse/'; // Ruta absoluta como fallback
+        const basePath = 'C:/Users/ng080/Desktop/BarberHouse/';
         const [navbarResponse, footerResponse] = await Promise.all([
             fetch(`${basePath}components/navbar.html`),
             fetch(`${basePath}components/footer.html`)
@@ -23,7 +23,7 @@ async function loadComponents() {
         document.getElementById('footer').innerHTML = await footerResponse.text();
     } catch (error) {
         console.error('Error loading components:', error);
-       
+
         document.getElementById('navbar').innerHTML = '<nav class="navbar bg-dark"></nav>';
         document.getElementById('footer').innerHTML = '<footer class="footer bg-black text-white py-4"></footer>';
     }
@@ -59,7 +59,7 @@ async function loadServices() {
                 })
                 .catch(error => {
                     console.error('Error loading services:', error);
-                   
+
                     const fallbackData = [
                         { id: "clasico", name: "Corte Clásico", description: "Elegante y atemporal.", price: 25, image: "service1.jpg" },
                         { id: "fade", name: "Fade Moderno", description: "Degradado personalizado.", price: 30, image: "service2.jpg" },
@@ -98,7 +98,7 @@ document.getElementById('reservaForm')?.addEventListener('submit', (e) => {
         date: formData.get('date'),
         time: formData.get('time')
     };
-    console.log('Reserva enviada:', reservation); 
+    console.log('Reserva enviada:', reservation);
     alert('¡Reserva confirmada! Pronto recibirás un correo de confirmación. (Simulación)');
     e.target.reset();
 });

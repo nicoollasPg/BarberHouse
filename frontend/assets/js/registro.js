@@ -10,8 +10,7 @@ document.getElementById('formRegistro').addEventListener('submit', async (e) => 
   const mensaje = document.getElementById('mensaje');
 
   if (!nombre_usuario || !correo || !dni || !password || !rol) {
-    mensaje.textContent = 'Por favor, completa todos los campos.';
-    mensaje.style.color = 'red';
+    showAlert('warning', 'Campos Incompletos', 'Por favor, completa todos los campos.');
     return;
   }
 
@@ -31,17 +30,14 @@ document.getElementById('formRegistro').addEventListener('submit', async (e) => 
     const data = await res.json();
 
     if (res.ok) {
-      mensaje.textContent = '    Registro exitoso, redirigiendo...';
-      mensaje.style.color = 'green';
+      showAlert('success', 'Registro Exitoso', 'Redirigiendo al login...');
       setTimeout(() => window.location.href = 'login.html', 1500);
     } else {
-      mensaje.textContent = ` ${data.message}`;
-      mensaje.style.color = 'red';
+      showAlert('error', 'Error en Registro', data.message);
     }
 
   } catch (error) {
     console.error('Error al registrar:', error);
-    mensaje.textContent = ' Error de conexión con el servidor';
-    mensaje.style.color = 'red';
+    showAlert('error', 'Error de Conexión', 'No se pudo conectar con el servidor.');
   }
 });

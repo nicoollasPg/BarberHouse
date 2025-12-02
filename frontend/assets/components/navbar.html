@@ -1,22 +1,15 @@
-<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top shadow-lg border-bottom">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top transparent" id="mainNavbar">
   <div class="container-fluid px-4">
     <!-- Logo y nombre -->
     <a class="navbar-brand fw-bold fs-3" href="index.html">
-      <img src="/frontend/assets/img/logo.jpg" 
-           alt="FadeHouse Logo" 
-           class="logo-img me-2 rounded" 
-           style="width: 45px; height: 45px; transition: transform 0.3s ease;">
+      <img src="assets/img/logo.jpg" alt="FadeHouse Logo" class="logo-img me-2 rounded"
+        style="width: 45px; height: 45px;">
       FadeHouse
     </a>
 
     <!-- Botón responsive -->
-    <button class="navbar-toggler border-0 p-2 rounded" 
-            type="button" 
-            data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav" 
-            aria-controls="navbarNav" 
-            aria-expanded="false" 
-            aria-label="Toggle navigation">
+    <button class="navbar-toggler border-0 p-2 rounded" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -26,23 +19,26 @@
 
         <!-- Enlaces principales -->
         <li class="nav-item">
-          <a class="nav-link px-3 py-2 rounded-pill" href="index.html#inicio">Inicio</a>
+          <a class="nav-link px-3 py-2 rounded-pill" href="index.html#inicio" data-section="inicio">Inicio</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link px-3 py-2 rounded-pill" href="catalogo.html">Servicios</a>
+          <a class="nav-link px-3 py-2 rounded-pill" href="catalogo.html" data-section="servicios">Servicios</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link px-3 py-2 rounded-pill" href="reserva.html" id="btnReservar">Reservar</a>
+          <a class="nav-link px-3 py-2 rounded-pill" href="index.html#equipo" data-section="equipo">Equipo</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link px-3 py-2 rounded-pill" href="index.html#equipo">Equipo</a>
+          <a class="nav-link px-3 py-2 rounded-pill" href="index.html#galeria" data-section="galeria">Galería</a>
         </li>
 
+        <!-- Botón CTA destacado -->
         <li class="nav-item">
-          <a class="nav-link px-3 py-2 rounded-pill" href="index.html#galeria">Cortes Realizados</a>
+          <a class="btn btn-golden pulse-glow" href="reserva.html" id="btnReservar">
+            <i class="fas fa-calendar-check me-2"></i>Reservar Ahora
+          </a>
         </li>
 
         <!-- Contenedor dinámico (login / usuario) -->
